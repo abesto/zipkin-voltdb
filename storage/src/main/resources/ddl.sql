@@ -12,6 +12,21 @@ CREATE TABLE span
   PRIMARY KEY (trace_id, id, md5)
 );
 
+-- Stream to export spans
+CREATE STREAM span_stream
+  PARTITION ON COLUMN trace_id
+  EXPORT TO TARGET spans (
+	  trace_id VARCHAR(32) NOT NULL,
+	  span_id VARCHAR(16) NOT NULL,
+	  service_name VARCHAR(255),
+	  name VARCHAR(255),
+	  ts TIMESTAMP,
+	  duration BIGINT,
+	  is_error TINYINT NOT NULL,
+	  md5 VARBINARY(16) NOT NULL,
+	  json VARCHAR NOT NULL
+);
+
 -- Allows procedures to work on a trace as a unit
 PARTITION TABLE span ON COLUMN trace_id;
 
